@@ -1,34 +1,62 @@
-# Estruturas Condicionais e Loops em Go
+# Estruturas Condicionais em Go
 
-Este código demonstra o uso de estruturas condicionais e loops em Go, com exemplos que ilustram a lógica de controle de fluxo.
+Este código é baseado na documentação oficial do Golang e demonstra como usar estruturas condicionais em Go, incluindo `if` e `else`.
 
-Os códigos a seguir mostram como usar `if`, `else`, e `for` para executar diferentes operações.
+Os códigos a seguir ilustram várias formas de utilizar condições e como elas influenciam o fluxo do programa.
 
-## 1. Incrementando uma Variável
+## 1. Verificando se um Número é Par ou Ímpar
 
-O primeiro trecho inicializa uma variável `i` e a incrementa até 3:
+O primeiro trecho verifica se uma variável é par ou ímpar:
 
 ```go
-i := 1
-for i <= 3 {
-    i = i + 1
+variavel := 7
+
+if variavel%2 == 0 {
+    fmt.Println(variavel, "é par")
+} else {
+    fmt.Println(variavel, "é ímpar")
 }
-fmt.Println("i é igual a:", i)
 ```
 
-- Inicializa i com 1.
-- O loop continua enquanto i for menor ou igual a 3.
-- O valor de i é impresso ao final, que será 4 após a conclusão do loop.
-
-## 2. Loop Simples
-
-O segundo loop imprime os números de 0 a 2:
+- Inicializa a variável com 7.
+- Se variavel é divisível por 2, imprime que é par.
+- Caso contrário, imprime que é ímpar.
+## 2. Verificando Divisibilidade por 4
+O segundo trecho verifica se a variável é divisível por 4:
 
 ```go
-fmt.Println("For do J:")
-for j := 0; j < 3; j++ {
-    fmt.Println(j)
+if variavel%4 == 0 {
+    fmt.Println(variavel, "é divisível por 4")
 }
-``` 
-- Este loop inicializa j como 0 e incrementa até que j seja menor que 3.
-- Os valores 0, 1 e 2 são impressos na saída.
+```
+Se variavel é divisível por 4, imprime que é divisível.
+## 3. Verificando Igualdade com 7 ou 8
+O terceiro trecho verifica se a variável é igual a 7 ou 8:
+
+```go
+if variavel == 8 || variavel == 7 {
+    fmt.Println("ou a variável é igual a 8 ou é igual a 7")
+}
+```
+Se variavel é igual a 7 ou 8, imprime a mensagem correspondente.
+##  4. Usando Declaração de Variável com if
+O quarto trecho utiliza uma declaração de variável dentro de uma condição:
+
+```go
+if num := 9; num < 0 {
+    fmt.Println(num, "é negativo")
+} else if num < 10 {
+    fmt.Println(num, "tem um dígito")
+} else {
+    fmt.Println(num, "tem múltiplos dígitos")
+}
+```
+- Inicializa num como 9.
+- Se num é negativo, imprime que é negativo.
+- Se num tem menos de 10, imprime que tem um dígito.
+- Caso contrário, imprime que tem múltiplos dígitos.
+## Como Executar o Código
+Para executar este código, use o seguinte comando no terminal:
+
+bash
+go run if_else.go
