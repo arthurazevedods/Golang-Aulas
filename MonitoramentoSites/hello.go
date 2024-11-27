@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 )
+
+const delay = 5
+const ciclos_monitoramento = 4
 
 func main() {
 
@@ -62,14 +66,17 @@ func iniciarMonitoramento() {
 		"https://arthurazevedods.vercel.app/",
 		"https://supervisao-e-sinergia.vercel.app/",
 	}
-
-	for i := range len(sites) {
-		resp, _ := http.Get(sites[i])
-		if resp.StatusCode == 200 {
-			fmt.Println("Site:", sites[i], "foi carregado com sucesso!")
-		} else {
-			fmt.Println("Site:", sites[i], "está com problemas. Status Code:", resp.StatusCode)
+	for i := 0; i < ciclos_monitoramento; i++ {
+		for i, site := range sites {
+			resp, _ := http.Get(site)
+			if resp.StatusCode == 200 {
+				fmt.Println("Site número ", i+1, ". Site:", site, "foi carregado com sucesso!")
+			} else {
+				fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+			}
 		}
+		time.Sleep(delay * time.Second)
+		fmt.Println("")
 	}
 
 }
