@@ -9,10 +9,11 @@ import (
 func main() {
 
 	introducao()
+	for {
+		comando := menu()
 
-	comando := menu()
-
-	switchComandos(comando)
+		switchComandos(comando)
+	}
 
 }
 
@@ -54,14 +55,23 @@ func switchComandos(comando int) {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
-	site := "https://httpbin.org/status/200"
-	resp, _ := http.Get(site)
-
-	if resp.StatusCode == 200 {
-		fmt.Println("Site:", site, "foi carregado com sucesso!")
-	} else {
-		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+	//slices
+	sites := []string{
+		"https://httpbin.org/status/200",
+		"https://github.com/",
+		"https://arthurazevedods.vercel.app/",
+		"https://supervisao-e-sinergia.vercel.app/",
 	}
+
+	for i := range len(sites) {
+		resp, _ := http.Get(sites[i])
+		if resp.StatusCode == 200 {
+			fmt.Println("Site:", sites[i], "foi carregado com sucesso!")
+		} else {
+			fmt.Println("Site:", sites[i], "está com problemas. Status Code:", resp.StatusCode)
+		}
+	}
+
 }
 
 func exibirLogs() {
