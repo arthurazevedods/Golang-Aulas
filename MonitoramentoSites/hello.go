@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -14,6 +15,7 @@ const ciclos_monitoramento = 4
 func main() {
 
 	introducao()
+	registrarLog("algo.com", false)
 	for {
 		comando := menu()
 
@@ -84,8 +86,10 @@ func testaSite(site string) {
 	}
 	if resp.StatusCode == 200 {
 		fmt.Println("Site:", site, "foi carregado com sucesso!")
+		registrarLog(site, true)
 	} else {
 		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+		registrarLog(site, true)
 	}
 }
 
@@ -120,4 +124,16 @@ func leSitesDoArquivo() ([]string, error) {
 	}
 	// Retornar o array de sites
 	return data.Sites, nil
+}
+
+func registrarLog(site string, status bool) {
+	arquivo, err := os.OpenFile("log.txt", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+
+	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + site + " - online: " + strconv.FormatBool(status) + "\n")
+
+	arquivo.Close()
 }
