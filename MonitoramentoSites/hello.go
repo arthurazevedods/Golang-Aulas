@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -24,9 +25,9 @@ func main() {
 func introducao() {
 	nome := "Arthur"
 
-	versao := 0.4
+	versao := 0.7
 
-	fmt.Println("Olá, sr.", nome)
+	fmt.Println("\nOlá, sr.", nome)
 	fmt.Println("Esse programa está na versão:", versao)
 }
 
@@ -59,21 +60,11 @@ func switchComandos(comando int) {
 
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
-	//slices
-	sites := []string{
-		"https://httpbin.org/status/200",
-		"https://github.com/",
-		"https://arthurazevedods.vercel.app/",
-		"https://supervisao-e-sinergia.vercel.app/",
-	}
+
+	sites, _ := leSitesDoArquivo()
 	for i := 0; i < ciclos_monitoramento; i++ {
-		for i, site := range sites {
-			resp, _ := http.Get(site)
-			if resp.StatusCode == 200 {
-				fmt.Println("Site número ", i+1, ". Site:", site, "foi carregado com sucesso!")
-			} else {
-				fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
-			}
+		for _, site := range sites {
+			testaSite(site)
 		}
 		time.Sleep(delay * time.Second)
 		fmt.Println("")
@@ -83,4 +74,50 @@ func iniciarMonitoramento() {
 
 func exibirLogs() {
 	fmt.Println("Exbindo Logs...")
+}
+
+func testaSite(site string) {
+	resp, err := http.Get(site)
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+	if resp.StatusCode == 200 {
+		fmt.Println("Site:", site, "foi carregado com sucesso!")
+	} else {
+		fmt.Println("Site:", site, "está com problemas. Status Code:", resp.StatusCode)
+	}
+}
+
+func leSitesDoArquivo() ([]string, error) {
+	// Abrir o arquivo JSON
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Erro ao obter o diretório:", err)
+	} else {
+		fmt.Println("Diretório atual:", dir)
+	}
+	file, err := os.Open("sites.json")
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+		return nil, err
+	}
+	defer file.Close()
+
+	// Decodificar o JSON diretamente do arquivo
+	var data struct {
+		Sites []string `json:"sites"`
+	}
+
+	err = json.NewDecoder(file).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("\nOs sites lidos são:")
+	for i, site := range data.Sites {
+		fmt.Println(i, " - ", site)
+	}
+	// Retornar o array de sites
+	return data.Sites, nil
 }
