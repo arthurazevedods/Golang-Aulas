@@ -48,9 +48,11 @@ func menu() int {
 func switchComandos(comando int) {
 	switch comando {
 	case 1:
+		fmt.Println("Monitorando...")
 		iniciarMonitoramento()
 	case 2:
-		exibirLogs()
+		fmt.Println("Imprimindo os Logs...")
+		imprimeLogs()
 	case 0:
 		fmt.Println("Saindo...")
 		os.Exit(0)
@@ -61,8 +63,6 @@ func switchComandos(comando int) {
 }
 
 func iniciarMonitoramento() {
-	fmt.Println("Monitorando...")
-
 	sites, _ := leSitesDoArquivo()
 	for i := 0; i < ciclos_monitoramento; i++ {
 		for _, site := range sites {
@@ -136,4 +136,15 @@ func registrarLog(site string, status bool) {
 	arquivo.WriteString(time.Now().Format("02/01/2006 15:04:05") + site + " - online: " + strconv.FormatBool(status) + "\n")
 
 	arquivo.Close()
+}
+
+func imprimeLogs() {
+
+	arquivo, err := os.ReadFile("log.txt")
+
+	if err != nil {
+		fmt.Println("Ocorreu um erro:", err)
+	}
+
+	fmt.Println(string(arquivo))
 }
