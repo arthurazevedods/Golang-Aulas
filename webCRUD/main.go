@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -32,7 +31,9 @@ func handleTarefas(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		criarTarefa(w, r)
 	case http.MethodPut:
-		finalizarTarefa(w, r)
+		procurarPorID(w, r)
+	case http.MethodDelete:
+		procurarPorID(w, r)
 
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -58,22 +59,44 @@ func criarTarefa(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tarefa)
 }
 
-func finalizarTarefa(w http.ResponseWriter, r *http.Request) {
+func procurarPorID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var aDeletar Task
+	var idBuscado Task
 
-	json.NewEncoder(w).Encode(tarefas)
+	if err := json.NewDecoder(r.Body).Decode(&idBuscado); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Erro ao decodificar a requisição"))
+		return
+	}
 
-	json.NewDecoder(r.Body).Decode(&aDeletar)
+	id := idBuscado.ID
 
-	fmt.Println(aDeletar.ID)
-	id := aDeletar.ID
+	found := false
 	for i := 0; i < len(tarefas); i++ {
 		if tarefas[i].ID == id {
-			tarefas = append(tarefas[:i], tarefas[i+1:]...)
+			if r.Method == "PUT" {
+				tarefas[i].Finish = true
+			} else {
+				tarefas = append(tarefas[:i], tarefas[i+1:]...)
+			}
+
+			found = true
 			break
 		}
 	}
-	fmt.Println("Depois:")
-	fmt.Println(tarefas)
+
+	if !found {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Tarefa não encontrada"))
+
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	if r.Method == "PUT" {
+		w.Write([]byte("Tarefa atualizada com sucesso"))
+	} else {
+		w.Write([]byte("Tarefa removida com sucesso"))
+	}
+
 }
